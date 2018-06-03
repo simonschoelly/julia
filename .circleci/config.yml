@@ -48,18 +48,17 @@ jobs:
           ccache -s &&
           make build-stats
       - run: | # move source tree out of the way, run tests from install tree
+          COMMIT_RANGE=$(echo "${CIRCLE_COMPARE_URL}" | cut -d/ -f7) &&
+          [[ "$COMMIT_RANGE" != *"..."* ]] && COMMIT_RANGE="${COMMIT_RANGE}...${COMMIT_RANGE}";
+          FILES_CHANGED=$(git diff --name-only $COMMIT_RANGE) &&
+          echo "$FILES_CHANGED" &&
           cd .. &&
           mv project julia-src &&
           /tmp/julia/bin/julia -e 'versioninfo()' &&
           /tmp/julia/bin/julia --sysimage-native-code=no -e 'true' &&
           /tmp/julia/bin/julia-debug --sysimage-native-code=no -e 'true' &&
           pushd /tmp/julia/share/julia/test &&
-          COMMIT_RANGE=$(echo "${CIRCLE_COMPARE_URL}" | cut -d/ -f7) &&
-          if [[ $COMMIT_RANGE != *"..."* ]]; then
-            COMMIT_RANGE="${COMMIT_RANGE}...${COMMIT_RANGE}";
-          fi &&
-          echo $COMMIT_RANGE &&
-          if [ ! -z $(git diff --name-only $COMMIT_RANGE | grep -v '^doc/') ]; then
+          if [ ! -z $(echo "$FILES_CHANGED" | grep -v '^doc/') ]; then
             /tmp/julia/bin/julia --check-bounds=yes runtests.jl all --skip Sockets | bar -i 30 &&
             /tmp/julia/bin/julia --check-bounds=yes runtests.jl LibGit2/online OldPkg/pkg Pkg/pkg download;
           fi &&

@@ -134,6 +134,7 @@ script:
     - du -sk /tmp/julia/*
     - ls -l /tmp/julia/lib
     - ls -l /tmp/julia/lib/julia
+    - FILES_CHANGED=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
     - cd .. && mv julia julia2
     # run tests
     - /tmp/julia/bin/julia --sysimage-native-code=no -e 'true' &&
@@ -141,7 +142,7 @@ script:
     - /tmp/julia/bin/julia -e 'versioninfo()'
     - pushd /tmp/julia/share/julia/test
     # skip tests if only files within the "doc" dir have changed
-    - if [ ! -z $(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -v '^doc/') ]; then
+    - if [ ! -z $(echo "$FILES_CHANGED" | grep -v '^doc/') ]; then
         /tmp/julia/bin/julia --check-bounds=yes runtests.jl $TESTSTORUN &&
         /tmp/julia/bin/julia --check-bounds=yes runtests.jl LibGit2/online OldPkg/pkg Pkg/pkg download; fi
     - popd
