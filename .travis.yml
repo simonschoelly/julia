@@ -134,7 +134,7 @@ script:
     - du -sk /tmp/julia/*
     - ls -l /tmp/julia/lib
     - ls -l /tmp/julia/lib/julia
-    - FILES_CHANGED=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+    - FILES_CHANGED=$(git diff --name-only $TRAVIS_COMMIT_RANGE -- || git ls-files)
     - cd .. && mv julia julia2
     # run tests
     - /tmp/julia/bin/julia --sysimage-native-code=no -e 'true' &&
