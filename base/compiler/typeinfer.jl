@@ -173,7 +173,7 @@ function typeinf_code(linfo::MethodInstance, optimize::Bool, cached::Bool,
                     tree.slotflags = fill(0x00, Int(method.nargs))
                     tree.slottypes = nothing
                     tree.ssavaluetypes = 0
-                    tree.codelocs = Int[1]
+                    tree.codelocs = Int32[1]
                     tree.linetable = [LineInfoNode(method.module, method.name, method.file, Int(method.line), 0)]
                     tree.inferred = true
                     tree.ssaflags = UInt8[]
